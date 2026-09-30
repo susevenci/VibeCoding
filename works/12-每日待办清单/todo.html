@@ -12,37 +12,58 @@
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: #f5f5f5;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255, 214, 165, 0.35), transparent 55%),
+        radial-gradient(circle at 85% 80%, rgba(255, 236, 179, 0.4), transparent 50%),
+        #faf3e0;
+      background-attachment: fixed;
       min-height: 100vh;
       padding: 20px;
     }
     .container {
       max-width: 500px;
       margin: 0 auto;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
     }
     .header {
-      padding: 20px;
-      border-bottom: 1px solid #eee;
+      padding: 20px 20px 16px;
+      text-align: center;
+    }
+    .header-title {
+      font-family: "STXingkai", "华文行楷", "Xingkai SC", "楷体", KaiTi, cursive;
+      font-size: 30px;
+      color: #6b4b2f;
+      font-weight: 400;
+      letter-spacing: 2px;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+    .today-date {
+      display: block;
+      font-size: 13px;
+      color: #b09468;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     .counter {
-      font-size: 16px;
-      color: #333;
+      display: inline-block;
+      font-size: 14px;
+      color: #8a6f4e;
       font-weight: 500;
+      background: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 6px rgba(160, 120, 70, 0.1);
     }
     .counter span {
-      color: #e54d2e;
-      font-weight: 600;
+      color: #e07b39;
+      font-weight: 700;
+      font-size: 16px;
     }
     .input-area {
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      padding: 0 4px 20px;
+      position: relative;
+      z-index: 5;
     }
     .input-row {
       display: flex;
@@ -50,70 +71,95 @@
     }
     .input-row input {
       flex: 1;
-      padding: 12px 16px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      min-width: 0;
+      padding: 14px 18px;
+      background: #fff;
+      border: 1px solid #f0e2c8;
+      border-radius: 14px;
       font-size: 16px;
+      color: #4a3520;
       outline: none;
-      transition: border-color 0.2s;
+      box-shadow: 0 2px 8px rgba(160, 120, 70, 0.07);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-row input::placeholder {
+      color: #c3b294;
     }
     .input-row input:focus {
-      border-color: #e54d2e;
+      border-color: #e8a45c;
+      box-shadow: 0 2px 12px rgba(224, 123, 57, 0.18);
     }
     .input-row button {
-      padding: 12px 24px;
-      background: #e54d2e;
+      padding: 14px 26px;
+      background: linear-gradient(135deg, #f09a4d, #e07b39);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 14px;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: background 0.2s;
+      box-shadow: 0 4px 12px rgba(224, 123, 57, 0.32);
+      transition: transform 0.15s, box-shadow 0.15s, filter 0.2s;
+      flex-shrink: 0;
     }
     .input-row button:hover {
-      background: #d03e1f;
+      filter: brightness(1.05);
+      box-shadow: 0 6px 16px rgba(224, 123, 57, 0.4);
+      transform: translateY(-1px);
+    }
+    .input-row button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 2px 6px rgba(224, 123, 57, 0.35);
     }
     .error-msg {
-      color: #e54d2e;
+      color: #e07b39;
       font-size: 13px;
-      height: 0;
+      padding-left: 6px;
+      max-height: 0;
       overflow: hidden;
-      transition: height 0.2s, opacity 0.2s;
       opacity: 0;
+      transition: max-height 0.2s, opacity 0.2s, margin-top 0.2s;
     }
     .error-msg.show {
-      height: auto;
+      max-height: 30px;
       opacity: 1;
+      margin-top: 8px;
     }
     .todo-list {
-      padding: 0 20px 20px;
       list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 60px;
     }
     .todo-item {
       display: flex;
       align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid #f0f0f0;
-      gap: 12px;
-      animation: slideIn 0.2s ease;
+      padding: 16px 18px;
+      background: #fff;
+      border-radius: 16px;
+      gap: 14px;
+      box-shadow: 0 2px 10px rgba(160, 120, 70, 0.1), 0 1px 2px rgba(160, 120, 70, 0.06);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease;
+      animation: slideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
     }
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .todo-item:last-child {
-      border-bottom: none;
+    .todo-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px rgba(160, 120, 70, 0.16), 0 2px 4px rgba(160, 120, 70, 0.08);
     }
-    .todo-item.completed .todo-text {
-      color: #999;
-      text-decoration: line-through;
+    .todo-item.completed {
+      opacity: 0.72;
     }
     .todo-checkbox {
-      width: 22px;
-      height: 22px;
-      border: 2px solid #ddd;
-      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #e6d5b8;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -122,98 +168,187 @@
       transition: all 0.2s;
     }
     .todo-checkbox:hover {
-      border-color: #e54d2e;
+      border-color: #f0a45c;
+      transform: scale(1.06);
     }
     .todo-checkbox.checked {
-      background: #e54d2e;
-      border-color: #e54d2e;
+      background: linear-gradient(135deg, #f0a45c, #e07b39);
+      border-color: #e07b39;
     }
     .todo-checkbox.checked::after {
       content: "✓";
       color: white;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: bold;
     }
     .todo-text {
+      position: relative;
       flex: 1;
       font-size: 16px;
-      color: #333;
+      color: #4a3520;
       word-break: break-word;
-      transition: all 0.2s;
+      line-height: 1.45;
+      transition: color 0.25s;
+    }
+    .todo-text::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      height: 2px;
+      width: 100%;
+      background: #b9a684;
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .todo-item.completed .todo-text {
+      color: #b0a189;
+    }
+    .todo-item.completed .todo-text::after {
+      transform: scaleX(1);
     }
     .todo-delete {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #999;
+      color: #c9bda9;
       font-size: 20px;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 8px;
       transition: all 0.2s;
       flex-shrink: 0;
     }
     .todo-delete:hover {
-      background: #fff0f0;
-      color: #e54d2e;
+      background: #fdf0e4;
+      color: #e07b39;
+      transform: rotate(90deg);
     }
     .empty-state {
       text-align: center;
-      padding: 40px 20px;
-      color: #999;
+      padding: 44px 20px;
+      color: #a89272;
       font-size: 15px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(160, 120, 70, 0.08);
+      animation: slideIn 0.28s ease;
+    }
+    .empty-icon {
+      display: block;
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 14px;
+      animation: floatSun 3s ease-in-out infinite;
+    }
+    @keyframes floatSun {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .empty-text {
+      font-family: "STXingkai", "华文行楷", "Xingkai SC", "楷体", KaiTi, cursive;
+      font-size: 21px;
+      color: #8a6f4e;
+      letter-spacing: 2px;
     }
     .clear-btn {
       display: block;
       width: 100%;
       padding: 14px;
-      margin-top: 12px;
-      background: transparent;
-      color: #999;
-      border: 1px solid #eee;
-      border-radius: 6px;
+      margin-top: 18px;
+      background: #fff;
+      color: #a89272;
+      border: 1px dashed #e6d5b8;
+      border-radius: 14px;
       font-size: 15px;
       cursor: pointer;
       transition: all 0.2s;
     }
     .clear-btn:hover {
-      background: #fff0f0;
-      border-color: #e54d2e;
-      color: #e54d2e;
+      background: #fdf0e4;
+      border-color: #e8a45c;
+      color: #e07b39;
     }
     .clear-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
     .clear-btn:disabled:hover {
-      background: transparent;
-      border-color: #eee;
-      color: #999;
+      background: #fff;
+      border-color: #e6d5b8;
+      color: #a89272;
     }
     .toast {
       position: fixed;
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: #333;
-      color: white;
+      background: #6b4b2f;
+      color: #fff8ec;
       padding: 12px 24px;
-      border-radius: 6px;
+      border-radius: 12px;
       font-size: 14px;
+      box-shadow: 0 6px 18px rgba(107, 75, 47, 0.3);
       opacity: 0;
       transition: all 0.3s;
       z-index: 100;
+      white-space: nowrap;
     }
     .toast.show {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 14px 12px;
+      }
+      .header {
+        padding: 12px 8px 14px;
+      }
+      .header-title {
+        font-size: 25px;
+      }
+      .input-area {
+        padding: 0 0 16px;
+      }
+      .input-row {
+        gap: 8px;
+      }
+      .input-row input {
+        padding: 13px 14px;
+      }
+      .input-row button {
+        padding: 13px 18px;
+        letter-spacing: 0;
+      }
+      .todo-item {
+        padding: 14px 14px;
+        gap: 12px;
+      }
+      .todo-list {
+        gap: 10px;
+      }
+      .empty-state {
+        padding: 36px 16px;
+      }
+      .toast {
+        bottom: 20px;
+        font-size: 13px;
+        padding: 11px 18px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
+      <h1 class="header-title">每日待办清单</h1>
+      <span class="today-date" id="todayDate"></span>
       <div class="counter">今天还有 <span id="counter">0</span> 件事</div>
     </div>
     <div class="input-area">
@@ -236,6 +371,7 @@
     const counter = document.getElementById('counter');
     const clearBtn = document.getElementById('clearBtn');
     const toast = document.getElementById('toast');
+    const todayDate = document.getElementById('todayDate');
 
     let todos = [];
 
@@ -254,6 +390,12 @@
       }
     }
 
+    function updateDate() {
+      const now = new Date();
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      todayDate.textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
+    }
+
     function updateCounter() {
       const activeCount = todos.filter(t => !t.completed).length;
       counter.textContent = activeCount;
@@ -262,7 +404,7 @@
     function renderTodos() {
       todoList.innerHTML = '';
       if (todos.length === 0) {
-        todoList.innerHTML = '<li class="empty-state">暂无待办事项，快添加一条吧！</li>';
+        todoList.innerHTML = '<li class="empty-state"><span class="empty-icon">☀️</span><span class="empty-text">今天也要加油呀</span></li>';
       } else {
         todos.forEach((todo, index) => {
           const li = document.createElement('li');
@@ -361,6 +503,8 @@
     loadTodos();
     renderTodos();
     updateCounter();
+    updateDate();
+    setInterval(updateDate, 60000);
   </script>
 </body>
 </html>
