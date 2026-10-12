@@ -14,7 +14,7 @@
 
 1. 全部可填写内容支持语音转文字
 2. 规划明日行程
-3. 记录待办事项（与 2 同页）
+3. 记录待办事项（与 2 可同页显示，也可独立显示，页内切换器自定义）
 4. 快速记录奇思妙想
 5. 写日记
 6. 学习记录 / 总结
@@ -29,6 +29,7 @@
 - 语音输入用 pre + final + interim + post 拼接，临时结果实时回填但**不覆盖已有内容**
 - 导出用 `Blob` + `URL.createObjectURL` + `<a download>`；导入走隐藏 `<input type="file">` + `FileReader`
 - 用户输入经 `innerHTML` 落地前统一走 `escapeHTML()` 转义
+- 「明日行程 / 待办」显示方式存于 `state.planLayout`（`both` / `schedule` / `todo`），随整体状态持久化；首页卡片经 `data-focus` 直达对应独立视图
 
 ## 复现
 

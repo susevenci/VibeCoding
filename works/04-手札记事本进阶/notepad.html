@@ -405,6 +405,41 @@
   }
   .plan-grid .section { margin-bottom: 0; }
 
+  /* ========== 显示模式切换（同页 / 仅行程 / 仅待办） ========== */
+  .view-switch {
+    display: inline-flex;
+    padding: 3px;
+    gap: 2px;
+    background: rgba(255,253,240,.6);
+    border: 1px solid var(--paper-line);
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .view-switch button {
+    border: none;
+    background: transparent;
+    font-family: var(--font-hand);
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: var(--ink-faint);
+    padding: 6px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .view-switch button:hover { color: var(--vermilion); }
+  .view-switch button.on {
+    background: var(--vermilion);
+    color: var(--paper);
+    box-shadow: var(--shadow);
+  }
+  /* 独立显示：单栏布局，隐藏另一栏 */
+  #view-plan[data-mode="schedule"] .plan-grid { grid-template-columns: 1fr; }
+  #view-plan[data-mode="schedule"] .plan-col-todo { display: none; }
+  #view-plan[data-mode="todo"]    .plan-grid { grid-template-columns: 1fr; }
+  #view-plan[data-mode="todo"]    .plan-col-schedule { display: none; }
+
   /* ========== 时间轴（明日行程） ========== */
   .schedule { display: grid; gap: 14px; }
   .slot {
@@ -741,13 +776,13 @@
       点选下方任一牌匾，进入手札。
     </div>
     <div class="cards">
-      <div class="card" data-go="view-plan">
+      <div class="card" data-go="view-plan" data-focus="schedule">
         <span class="corner"></span>
         <span class="emoji">📜</span>
         <h3>明日行程</h3>
         <p>提前铺排明日所行，按时段缓缓落笔。</p>
       </div>
-      <div class="card" data-go="view-plan">
+      <div class="card" data-go="view-plan" data-focus="todo">
         <span class="corner"></span>
         <span class="emoji">✓</span>
         <h3>待办事项</h3>
@@ -781,11 +816,11 @@
   </section>
 
   <!-- ========== 明日行程 + 待办 ========== -->
-  <section class="view" id="view-plan">
+  <section class="view" id="view-plan" data-mode="both">
     <div class="page-head">
       <div>
-        <div class="page-title">明日行程 & 待办</div>
-        <div class="section-sub" style="margin-top:4px;">为明日铺路，为今日收尾。</div>
+        <div class="page-title" id="planPageTitle">明日行程 &amp; 待办</div>
+        <div class="section-sub" style="margin-top:4px;" id="planPageSub">为明日铺路，为今日收尾。</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <span class="page-date" id="planTomorrowDate"></span>
@@ -793,10 +828,16 @@
       </div>
     </div>
 
+    <div class="view-switch" id="planModeSwitch" title="选择显示方式">
+      <button data-mode="both">同页显示</button>
+      <button data-mode="schedule">仅明日行程</button>
+      <button data-mode="todo">仅待办</button>
+    </div>
+
     <div class="plan-grid">
 
       <!-- 明日行程 -->
-      <div class="section">
+      <div class="section plan-col-schedule">
         <div class="section-title">🪶 明日时辰安排</div>
         <div class="section-sub" id="planTomorrowWeek">—</div>
         <div class="schedule" id="scheduleList"></div>
@@ -805,7 +846,7 @@
       </div>
 
       <!-- 待办 -->
-      <div class="section">
+      <div class="section plan-col-todo">
         <div class="section-title">📌 待办事项</div>
         <div class="section-sub" id="todoDate">—</div>
         <div class="row" style="margin-bottom:12px;">
@@ -984,7 +1025,8 @@ const state = {
   todos:    { date: '', items: [] },    // items: [{id, text, done}]
   thoughts: [],                        // [{id, ts, date, title, body}]
   diaries:  {},                        // { 'YYYY-MM-DD': {mood, body, ts} }
-  learns:   []                         // [{id, ts, date, topic, body}]
+  learns:   [],                        // [{id, ts, date, topic, body}]
+  planLayout: 'both'                   // view-plan 显示方式：both | schedule | todo
 };
 
 /* ---------- 默认时段 ---------- */
@@ -1058,6 +1100,7 @@ function load() {
     if (!state.thoughts) state.thoughts = [];
     if (!state.diaries)  state.diaries  = {};
     if (!state.learns)   state.learns   = [];
+    if (!['both','schedule','todo'].includes(state.planLayout)) state.planLayout = 'both';
   } catch(e) { console.warn('load fail', e); }
 }
 
@@ -1092,17 +1135,45 @@ function syncDates() {
 }
 
 /* ---------- 视图切换 ---------- */
-function go(viewId) {
+function go(viewId, focus) {
   $$('.view').forEach(v => v.classList.remove('active'));
   const v = document.getElementById(viewId);
   if (v) v.classList.add('active');
   $('#fabHome').classList.toggle('show', viewId !== 'view-home');
   window.scrollTo({top:0, behavior:'smooth'});
 
-  if (viewId === 'view-plan')   { renderSchedule(); renderTodos(); }
+  if (viewId === 'view-plan') {
+    // 首页卡片可指定聚焦栏（schedule / todo），否则沿用上次选择
+    if (focus === 'schedule' || focus === 'todo') state.planLayout = focus;
+    applyPlanMode();
+    renderSchedule(); renderTodos();
+  }
   if (viewId === 'view-thought'){ renderThoughts(); }
   if (viewId === 'view-diary')  { renderDiaryTabs(); renderDiaryHistory(); }
   if (viewId === 'view-learn')  { renderLearns(); }
+}
+
+/* ---------- 行程页显示方式：同页 / 仅明日行程 / 仅待办 ---------- */
+const PLAN_MODE_TEXT = {
+  both:     { title: '明日行程 & 待办', sub: '为明日铺路，为今日收尾。' },
+  schedule: { title: '明日行程',        sub: '提前铺排明日所行，按时段缓缓落笔。' },
+  todo:     { title: '待办事项',        sub: '记下心中挂念之事，逐项勾销。' }
+};
+
+function applyPlanMode() {
+  const mode = ['both','schedule','todo'].includes(state.planLayout) ? state.planLayout : 'both';
+  const view = $('#view-plan');
+  view.dataset.mode = mode;
+  $$('#planModeSwitch button').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+  $('#planPageTitle').textContent = PLAN_MODE_TEXT[mode].title;
+  $('#planPageSub').textContent   = PLAN_MODE_TEXT[mode].sub;
+}
+
+function setPlanMode(mode) {
+  if (!['both','schedule','todo'].includes(mode)) return;
+  state.planLayout = mode;
+  applyPlanMode();
+  save();
 }
 
 /* =========================================================================
@@ -1557,9 +1628,14 @@ function bindAll() {
   // 卡片 / 返回
   document.body.addEventListener('click', (e) => {
     const target = e.target.closest('[data-go]');
-    if (target) go(target.dataset.go);
+    if (target) go(target.dataset.go, target.dataset.focus);
   });
   $('#fabHome').addEventListener('click', () => go('view-home'));
+
+  // 行程页显示方式切换
+  $$('#planModeSwitch button').forEach(b => {
+    b.addEventListener('click', () => setPlanMode(b.dataset.mode));
+  });
 
   // 待办
   $('#todoAddBtn').addEventListener('click', () => {
